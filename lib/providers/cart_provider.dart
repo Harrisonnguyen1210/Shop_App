@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CartItem {
+class ItemCart {
   final String id;
   final String title;
   final int quantity;
   final double price;
 
-  CartItem({
+  ItemCart({
     @required this.id,
     @required this.title,
     @required this.quantity,
@@ -15,9 +15,9 @@ class CartItem {
 }
 
 class CartProvider with ChangeNotifier {
-  Map<String, CartItem> _items = {};
+  Map<String, ItemCart> _items = {};
 
-  Map<String, CartItem> get items {
+  Map<String, ItemCart> get items {
     return {..._items};
   }
 
@@ -37,7 +37,7 @@ class CartProvider with ChangeNotifier {
     if (_items.containsKey(productId)) {
       _items.update(
         productId,
-        (value) => CartItem(
+        (value) => ItemCart(
           id: value.id,
           title: value.title,
           price: value.price,
@@ -47,7 +47,7 @@ class CartProvider with ChangeNotifier {
     } else {
       _items.putIfAbsent(
         productId,
-        () => CartItem(
+        () => ItemCart(
           id: DateTime.now().toString(),
           title: title,
           price: price,
@@ -55,6 +55,11 @@ class CartProvider with ChangeNotifier {
         ),
       );
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }
