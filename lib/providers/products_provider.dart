@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/models/product.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProductProvider with ChangeNotifier {
   List<Product> _items = [
@@ -45,15 +47,29 @@ class ProductProvider with ChangeNotifier {
     return _items.where((item) => item.isFavourite).toList();
   }
 
-  void addProduct(Product product) {
-    final newProduct = Product(
-        id: DateTime.now().toString(),
-        title: product.title,
-        price: product.price,
-        description: product.description,
-        imageUrl: product.imageUrl);
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProduct(Product product) {
+    const url = 'https://shop-app-e767d.firebaseio.com/products.json';
+    return http.post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'isFavourite': product.isFavourite
+      }),
+    ).then((response) {
+      final newProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: product.title,
+          price: product.price,
+          description: product.description,
+          imageUrl: product.imageUrl);
+      _items.add(newProduct);
+      notifyListeners();
+    }).catchError((onError) {
+      throw onError;
+    });
   }
 
   Product findById(String productId) {
@@ -61,7 +77,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   void updateProduct(Product newProduct) {
-    _items[_items.indexWhere((element) => newProduct.id == element.id)] = newProduct;
+    _items[_items.indexWhere((element) => newProduct.id == element.id)] =
+        newProduct;
     notifyListeners();
   }
 
