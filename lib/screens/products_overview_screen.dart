@@ -34,7 +34,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('CAll meeeeeeee');
     setState(() {
       _isLoading = true;
     });

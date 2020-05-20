@@ -41,7 +41,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _imageUrlController.dispose();
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState.validate();
     if (!isValid) return;
     _form.currentState.save();
@@ -49,7 +49,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (ModalRoute.of(context).settings.arguments == null) {
-      Provider.of<ProductProvider>(context, listen: false)
+      await Provider.of<ProductProvider>(context, listen: false)
           .addProduct(_editedProduct)
           .catchError((onError) {
         return showDialog(
@@ -69,18 +69,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
             ],
           ),
         );
-      }).then((_) {
-        setState(() {
-          _isLoading = false;
-          print(_isLoading);
-        });
-        Navigator.pop(context);
       });
     } else {
-      Provider.of<ProductProvider>(context, listen: false)
+      await Provider.of<ProductProvider>(context, listen: false)
           .updateProduct(_editedProduct);
-      Navigator.pop(context);
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.pop(context);
   }
 
   @override

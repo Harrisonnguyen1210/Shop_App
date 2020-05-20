@@ -44,10 +44,16 @@ class ProductProvider with ChangeNotifier {
     return _items.firstWhere((product) => product.id == productId);
   }
 
-  void updateProduct(Product newProduct) {
-    _items[_items.indexWhere((element) => newProduct.id == element.id)] =
-        newProduct;
-    notifyListeners();
+  Future<void> updateProduct(Product newProduct) async {
+    final url = 'https://shop-app-e767d.firebaseio.com/products/${newProduct.id}.json';
+    await http.patch(url,
+        body: json.encode({
+          'title': newProduct.title,
+          'description': newProduct.description,
+          'imageUrl': newProduct.imageUrl,
+          'price': newProduct.price,
+        }));
+    await fetchProducts();
   }
 
   void deleteProduct(String productId) {
@@ -72,7 +78,7 @@ class ProductProvider with ChangeNotifier {
         ));
       });
       _items = productList;
-      print(json.decode(response.body));
+      notifyListeners();
     } catch (error) {
       throw error;
     }
