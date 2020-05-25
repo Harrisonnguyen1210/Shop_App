@@ -4,8 +4,27 @@ import 'package:shop_app/providers/cart_provider.dart';
 import 'package:shop_app/providers/orders_provider.dart';
 import 'package:shop_app/widgets/cart_item.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const route = '/cart';
+
+  @override
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  var _isLoading = false;
+
+  void _addOrder(CartProvider cartProvider) async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Provider.of<OrdersProvider>(context, listen: false)
+        .addOrder(cartProvider.items.values.toList(), cartProvider.totalAmount);
+    cartProvider.clearCart();
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +59,10 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   FlatButton(
-                    onPressed: () {
-                      Provider.of<OrdersProvider>(context, listen: false).addOrder(
-                          cartProvider.items.values.toList(),
-                          cartProvider.totalAmount);
-                      cartProvider.clearCart();
-                    },
-                    child: Text('ORDER NOW'),
+                    onPressed: (cartProvider.totalAmount <= 0 || _isLoading)
+                        ? null
+                        : () => _addOrder(cartProvider),
+                    child: _isLoading ? CircularProgressIndicator() : Text('ORDER NOW'),
                     textColor: Theme.of(context).primaryColor,
                   )
                 ],

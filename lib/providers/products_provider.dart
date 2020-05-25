@@ -59,7 +59,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String productId) async {
-    final url = 'https://shop-app-e767d.firebaseio.com/products/${productId}.json';
+    final url =
+        'https://shop-app-e767d.firebaseio.com/products/${productId}.json';
     final existingProductIndex =
         _items.indexWhere((product) => productId == product.id);
     var existingProduct = _items[existingProductIndex];
@@ -80,7 +81,11 @@ class ProductProvider with ChangeNotifier {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> productList = [];
-      if (extractedData == null) return;
+      if (extractedData == null) {
+        _items = productList;
+        notifyListeners();
+        return;
+      }
       extractedData.forEach((key, value) {
         productList.add(Product(
           id: key,
