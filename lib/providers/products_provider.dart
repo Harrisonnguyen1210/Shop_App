@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ProductProvider with ChangeNotifier {
+  var _authToken;
+
   List<Product> _items = [];
 
   List<Product> get items {
@@ -15,8 +17,12 @@ class ProductProvider with ChangeNotifier {
     return _items.where((item) => item.isFavourite).toList();
   }
 
+  void updateToken(String token) {
+    _authToken = token;
+  }
+
   Future<void> addProduct(Product product) async {
-    const url = 'https://shop-app-e767d.firebaseio.com/products.json';
+    final url = 'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken';
     try {
       final response = await http.post(
         url,
@@ -47,7 +53,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> updateProduct(Product newProduct) async {
     final url =
-        'https://shop-app-e767d.firebaseio.com/products/${newProduct.id}.json';
+        'https://shop-app-e767d.firebaseio.com/products/${newProduct.id}.json?auth=$_authToken';
     await http.patch(url,
         body: json.encode({
           'title': newProduct.title,
@@ -60,7 +66,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> deleteProduct(String productId) async {
     final url =
-        'https://shop-app-e767d.firebaseio.com/products/${productId}.json';
+        'https://shop-app-e767d.firebaseio.com/products/${productId}.json?auth=$_authToken';
     final existingProductIndex =
         _items.indexWhere((product) => productId == product.id);
     var existingProduct = _items[existingProductIndex];
@@ -76,7 +82,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> fetchProducts() async {
-    const url = 'https://shop-app-e767d.firebaseio.com/products.json';
+    final url = 'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
