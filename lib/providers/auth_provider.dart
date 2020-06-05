@@ -22,6 +22,10 @@ class AuthProvider with ChangeNotifier {
     return null;
   }
 
+  String get userId {
+    return _userId;
+  }
+
   Future<void> _authenticate(
       String email, String password, String authSegment) async {
     final url =
@@ -34,7 +38,6 @@ class AuthProvider with ChangeNotifier {
             'returnSecureToken': true
           }));
       final responseData = json.decode(response.body);
-      print(responseData);
       if (responseData['error'] != null) {
         throw HttpException(
             'Authentication failed with error: ${responseData['error']['message']}');
@@ -45,7 +48,6 @@ class AuthProvider with ChangeNotifier {
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
       notifyListeners();
     } catch (error) {
-      print(error);
       throw error;
     }
   }

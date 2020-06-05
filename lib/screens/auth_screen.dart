@@ -145,7 +145,6 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
-      print(error);
       var errorMessage = 'Something strange happened. Please try again later';
       _showErrorDialog(errorMessage);
     }

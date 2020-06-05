@@ -6,6 +6,7 @@ import 'dart:convert';
 
 class ProductProvider with ChangeNotifier {
   var _authToken;
+  var _userId;
 
   List<Product> _items = [];
 
@@ -21,8 +22,13 @@ class ProductProvider with ChangeNotifier {
     _authToken = token;
   }
 
+  void updateUserId(String userId) {
+    _userId = userId;
+  }
+
   Future<void> addProduct(Product product) async {
-    final url = 'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken';
+    final url =
+        'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken';
     try {
       final response = await http.post(
         url,
@@ -31,7 +37,7 @@ class ProductProvider with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavourite': product.isFavourite
+          'userId': _userId
         }),
       );
       final newProduct = Product(
@@ -81,8 +87,12 @@ class ProductProvider with ChangeNotifier {
     existingProduct = null;
   }
 
-  Future<void> fetchProducts() async {
-    final url = 'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken';
+  Future<void> fetchProducts({filterByUser = false}) async {
+    final filterUrlSegment = filterByUser ? 'orderBy="userId"&equalTo="$_userId"' : '';
+    final url =
+        'https://shop-app-e767d.firebaseio.com/products.json?auth=$_authToken&$filterUrlSegment';
+    final favouriteUrl =
+        'https://shop-app-e767d.firebaseio.com/userFavourites/$_userId.json?auth=$_authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -92,6 +102,8 @@ class ProductProvider with ChangeNotifier {
         notifyListeners();
         return;
       }
+      final favouriteResponse = await http.get(favouriteUrl);
+      final favouriteData = json.decode(favouriteResponse.body);
       extractedData.forEach((key, value) {
         productList.add(Product(
           id: key,
@@ -99,7 +111,7 @@ class ProductProvider with ChangeNotifier {
           description: value['description'],
           price: value['price'],
           imageUrl: value['imageUrl'],
-          isFavourite: value['isFavourite'],
+          isFavourite: favouriteData == null ? false : favouriteData[key] ?? false,
         ));
       });
       _items = productList;

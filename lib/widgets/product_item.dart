@@ -26,7 +26,8 @@ class ProductItem extends StatelessWidget {
             leading: IconButton(
               icon: Icon(Icons.favorite),
               onPressed: () {
-                product.toggleFavouriteStatus(authProvider.token);
+                product.toggleFavouriteStatus(
+                    authProvider.token, authProvider.userId);
               },
               color: product.isFavourite
                   ? Theme.of(context).accentColor
@@ -38,12 +39,13 @@ class ProductItem extends StatelessWidget {
                 cartProvider.addItem(product.id, product.price, product.title);
                 Scaffold.of(context).hideCurrentSnackBar();
                 Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Add item to cart'),
-                  duration: Duration(seconds: 2),
-                  action: SnackBarAction(label: 'UNDO', onPressed: () {
-                    cartProvider.removeSingleItem(product.id);
-                  })
-                ));
+                    content: Text('Add item to cart'),
+                    duration: Duration(seconds: 2),
+                    action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: () {
+                          cartProvider.removeSingleItem(product.id);
+                        })));
               },
               color: Theme.of(context).accentColor,
             ),
