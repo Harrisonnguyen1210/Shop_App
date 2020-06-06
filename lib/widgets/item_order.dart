@@ -42,7 +42,7 @@ class _ItemOrderState extends State<ItemOrder> {
           if (_expanded)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              height: min(widget.orderItem.cartItems.length * 20.0 + 50, 100),
+              height: min(widget.orderItem.cartItems.length * 20.0 + 50, 120),
               child: ListView.builder(
                 itemCount: widget.orderItem.cartItems.length,
                 itemBuilder: (context, index) => OrderExpanded(

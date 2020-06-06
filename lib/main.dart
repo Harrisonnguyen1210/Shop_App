@@ -23,15 +23,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (buildContext) => AuthProvider()),
         ChangeNotifierProxyProvider<AuthProvider, ProductProvider>(
           update: (buildContext, authProvider, productProvider) {
-              productProvider.updateToken(authProvider.token);
-              productProvider.updateUserId(authProvider.userId);
-              return productProvider;
+            productProvider.updateToken(authProvider.token);
+            productProvider.updateUserId(authProvider.userId);
+            return productProvider;
           },
           create: (buildContext) => ProductProvider(),
         ),
         ChangeNotifierProxyProvider<AuthProvider, OrdersProvider>(
-          update: (buildContext, authProvider, ordersProvider) =>
-              ordersProvider..updateToken(authProvider.token),
+          update: (buildContext, authProvider, ordersProvider) {
+            ordersProvider.updateToken(authProvider.token);
+            ordersProvider.updateUserId(authProvider.userId);
+            return ordersProvider;
+          },
           create: (buildContext) => OrdersProvider(),
         ),
       ],
@@ -43,8 +46,20 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Lato',
         ),
         home: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) =>
-              authProvider.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          builder: (context, authProvider, child) => authProvider.isAuth
+              ? ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: authProvider.tryAutoLogin(),
+                  builder: (context, snapShot) {
+                    if (snapShot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return AuthScreen();
+                    }
+                  },
+                ),
         ),
         routes: {
           ProductDetailScreen.route: (context) => ProductDetailScreen(),
