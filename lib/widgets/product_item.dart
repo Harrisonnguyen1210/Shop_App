@@ -18,9 +18,13 @@ class ProductItem extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, ProductDetailScreen.route,
             arguments: product.id),
         child: GridTile(
-          child: Image(
-            image: NetworkImage(product.imageUrl),
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder: AssetImage('assets/images/image_placeholder.png'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
           footer: GridTileBar(
             leading: IconButton(
