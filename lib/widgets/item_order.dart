@@ -18,7 +18,6 @@ class _ItemOrderState extends State<ItemOrder>
     with SingleTickerProviderStateMixin {
   var _expanded = false;
   AnimationController _animationController;
-  Animation _slideAnimation;
   Animation _fadeAnimation;
 
   @override
@@ -26,11 +25,6 @@ class _ItemOrderState extends State<ItemOrder>
     super.initState();
     _animationController = AnimationController(
         vsync: this, duration: Duration(milliseconds: 1000));
-    _slideAnimation = Tween(
-      begin: Offset(0, -1),
-      end: Offset(0, 0),
-    ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.linear));
     _fadeAnimation = Tween(
       begin: 0.0,
       end: 1.0,
