@@ -98,6 +98,7 @@ class AuthProvider with ChangeNotifier {
     }
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
+    print('LOL');
     notifyListeners();
   }
 
