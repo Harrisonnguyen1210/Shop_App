@@ -10,6 +10,7 @@ Tech used:
 - Implementing a CustomScrollView with SliverList and Hero widget, customizing page transition with PageTransitionsBuilder
 
 Link to download app's apk: https://appsenjoy.com/files/620a2c2ea5a3382195a93bbda9927c6d.apk
+
 You can register a new account or use the test account here: Email: test@gmail.com, Password: 123456h
 
 ## App demo
